@@ -331,7 +331,7 @@ async function emailContractCopy(pdfBlob, values, agreementNumber) {
     fd.append('Customer Address', values.customer_address);
     fd.append('Vehicle', values.vehicle_make_model);
     fd.append('Registration', values.vehicle_registration);
-    fd.append('attachment', pdfBlob, `Battery_Service_Agreement_${(values.customer_name || 'Customer').replace(/\s+/g,'_')}.pdf`);
+    // fd.append('attachment', pdfBlob, `Battery_Service_Agreement_${(values.customer_name || 'Customer').replace(/\s+/g,'_')}.pdf`);
 
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     const data = await res.json();
