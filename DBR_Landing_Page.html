@@ -266,16 +266,6 @@
             <input type="text" id="vehicle_registration" required>
           </div>
         </div>
-        <div class="grid">
-          <div class="field">
-            <label for="vehicle_vin">VIN Number</label>
-            <input type="text" id="vehicle_vin">
-          </div>
-          <div class="field">
-            <label for="battery_make_model">Battery Make / Model</label>
-            <input type="text" id="battery_make_model">
-          </div>
-        </div>
       </fieldset>
 
       <button type="submit" class="submit-btn" id="submitBtn">Generate My Contract</button>
@@ -312,7 +302,7 @@
 //      copy the Access Key it emails you (takes about a minute, free).
 //   2. Paste that key below in place of "YOUR_WEB3FORMS_ACCESS_KEY".
 // Until this is set, the form still works — it just skips the email step.
-const WEB3FORMS_ACCESS_KEY = "5066baba-00fe-41ed-8812-34d9e0526a08";
+const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
 const NOTIFY_EMAIL = "sales.diyauto@gmail.com";
 
 async function emailContractCopy(values, agreementNumber) {
@@ -330,8 +320,8 @@ async function emailContractCopy(values, agreementNumber) {
     fd.append('Customer Email', values.customer_email);
     fd.append('Customer Phone', values.customer_contact_number);
     fd.append('Customer Address', values.customer_address);
-   // fd.append('Vehicle', values.vehicle_make_model);
-    //fd.append('Registration', values.vehicle_registration);
+    fd.append('Vehicle', values.vehicle_make_model);
+    fd.append('Registration', values.vehicle_registration);
 
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     const data = await res.json();
@@ -382,8 +372,6 @@ form.addEventListener('submit', async (e) => {
     customer_postal_code: document.getElementById('customer_postal_code').value.trim(),
     vehicle_make_model: document.getElementById('vehicle_make_model').value.trim(),
     vehicle_registration: document.getElementById('vehicle_registration').value.trim(),
-   // vehicle_vin: document.getElementById('vehicle_vin').value.trim(),
-   // battery_make_model: document.getElementById('battery_make_model').value.trim(),
   };
 
   try {
