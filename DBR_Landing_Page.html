@@ -330,8 +330,8 @@ async function emailContractCopy(values, agreementNumber) {
     fd.append('Customer Email', values.customer_email);
     fd.append('Customer Phone', values.customer_contact_number);
     fd.append('Customer Address', values.customer_address);
-    fd.append('Vehicle', values.vehicle_make_model);
-    fd.append('Registration', values.vehicle_registration);
+   // fd.append('Vehicle', values.vehicle_make_model);
+    //fd.append('Registration', values.vehicle_registration);
 
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     const data = await res.json();
