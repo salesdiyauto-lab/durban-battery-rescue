@@ -279,8 +279,7 @@
       <div class="status" id="statusBox"></div>
 
       <div class="contract-actions" id="contractActions">
-        <a href="#" class="btn-secondary" id="viewContractLink" target="_blank">View / Download Contract</a>
-        <a href="https://payment.payfast.io/eng/process?cmd=_paynow&receiver=27431355&item_name=24+MONTH+SERVICE+CONTRACT+A&email_confirmation=1&confirmation_address=sales.diyauto@gmail.com&item_description=24+MONTH+SERVICE+CONTRACT&amount=249.00&subscription_type=1&recurring_amount=249.00&cycles=24&frequency=3" class="btn-pay" target="_blank">Subscribe &amp; Pay (PayFast)</a>
+        <a href="https://payment.payfast.io/eng/process?cmd=_paynow&receiver=27431355&item_name=24+MONTH+SERVICE+CONTRACT+A&email_confirmation=1&confirmation_address=sales.diyauto@gmail.com&item_description=24+MONTH+SERVICE+CONTRACT&amount=249.00&subscription_type=1&recurring_amount=249.00&cycles=24&frequency=3" class="btn-pay" target="_blank" style="flex:1 1 100%;">Subscribe &amp; Pay (PayFast)</a>
       </div>
     </form>
   </div>
@@ -296,7 +295,7 @@
       </svg>
     </div>
     <h3>Thanks — your details are in!</h3>
-    <p>A service consultant will call you shortly to finalise your contract. In the meantime, feel free to review the contract we've just opened for you, sign it, and subscribe whenever you're ready.</p>
+    <p>A service consultant will call you shortly to finalise your contract. We've got your details — no need to do anything else for now.</p>
     <button class="modal-close" id="modalCloseBtn">Got it</button>
   </div>
 </div>
@@ -311,7 +310,7 @@ const PDF_BASE64 = "JVBERi0xLjcKJeLjz9MKMSAwIG9iago8PAovUHJvZHVjZXIgKHB5cGRmKQo+
 //      copy the Access Key it emails you (takes about a minute, free).
 //   2. Paste that key below in place of "YOUR_WEB3FORMS_ACCESS_KEY".
 // Until this is set, the form still works — it just skips the email step.
-const WEB3FORMS_ACCESS_KEY = "5066baba-00fe-41ed-8812-34d9e0526a08";
+const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
 const NOTIFY_EMAIL = "sales.diyauto@gmail.com";
 
 async function emailContractCopy(pdfBlob, values, agreementNumber) {
@@ -331,7 +330,8 @@ async function emailContractCopy(pdfBlob, values, agreementNumber) {
     fd.append('Customer Address', values.customer_address);
     fd.append('Vehicle', values.vehicle_make_model);
     fd.append('Registration', values.vehicle_registration);
-    // fd.append('attachment', pdfBlob, `Battery_Service_Agreement_${(values.customer_name || 'Customer').replace(/\s+/g,'_')}.pdf`);
+    // Note: file attachments require a paid Web3Forms plan, so we only
+    // send the customer's details as text — not the PDF itself.
 
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     const data = await res.json();
@@ -365,7 +365,6 @@ const form = document.getElementById('contractForm');
 const submitBtn = document.getElementById('submitBtn');
 const statusBox = document.getElementById('statusBox');
 const contractActions = document.getElementById('contractActions');
-const viewContractLink = document.getElementById('viewContractLink');
 const confirmModal = document.getElementById('confirmModal');
 const modalCloseBtn = document.getElementById('modalCloseBtn');
 
@@ -443,30 +442,27 @@ form.addEventListener('submit', async (e) => {
 
     const filledBytes = await pdfDoc.save();
     const blob = new Blob([filledBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-
-    viewContractLink.href = url;
-    viewContractLink.download = `Battery_Service_Agreement_${values.customer_name.replace(/\s+/g,'_') || 'Customer'}.pdf`;
+    // The filled contract is kept in memory for our own records only —
+    // it is intentionally not shown, linked, or opened for the customer.
 
     const emailResult = await emailContractCopy(blob, values, agreementNumber);
 
     statusBox.className = 'status ok show';
     if (emailResult.skipped) {
-      statusBox.textContent = 'Your contract is ready. Opening it now — please review, then sign and subscribe below.';
+      statusBox.textContent = 'Thanks — your details have been submitted.';
     } else if (emailResult.ok) {
-      statusBox.textContent = `Your contract is ready and a copy has been emailed to our team. Opening it now — please review, then sign and subscribe below.`;
+      statusBox.textContent = 'Thanks — your details have been submitted to our team.';
     } else {
-      statusBox.textContent = 'Your contract is ready. Opening it now — please review, then sign and subscribe below. (We could not email a copy automatically, so please attach the downloaded PDF if you contact us.)';
+      statusBox.textContent = 'Thanks — your details have been submitted. (Our automatic notification had an issue, but we still have your details below.)';
     }
     contractActions.classList.add('show');
 
-    window.open(url, '_blank');
     showConfirmModal();
 
   } catch (err) {
     console.error(err);
     statusBox.className = 'status err show';
-    statusBox.textContent = 'Something went wrong preparing your contract. Please try again, or contact us directly.';
+    statusBox.textContent = 'Something went wrong submitting your details. Please try again, or contact us directly.';
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Generate My Contract';
